@@ -1,0 +1,25 @@
+version: '3.3'
+services:
+    oracledb:
+        container_name: oracle-21.3.0-xe
+        network_mode: Oracle-network
+        ports:
+            - '21521:1521'
+            - '25500:5500'
+        environment:
+            - ORACLE_PWD=oracle
+        volumes:
+            - 'oradata:/opt/oracle/oradata'
+        image: 'registry.cn-hangzhou.aliyuncs.com/gcr-google/oracle.express:21.3.0-xe'
+    ords:
+        container_name: ords
+        depends_on:
+            - oracledb
+        network_mode: Oracle-network
+        volumes:
+            - '`pwd`/ords_volume/:/opt/oracle/variables'
+        ports:
+            - '8181:8181'
+        image: 'container-registry.oracle.com/database/ords:latest'
+networks:
+  	oracle-network:
