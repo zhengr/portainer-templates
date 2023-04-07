@@ -18,6 +18,28 @@
     },
     {
       "type": 1,
+      "title": "Registry (cache)",
+      "description": "Docker image registry configured as a DockerHub pull through cache",
+      "categories": ["docker"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/registry.png",
+      "image": "registry:latest",
+      "ports": ["5000/tcp"],
+      "volumes": [
+        {
+          "container": "/var/lib/registry"
+        }
+      ],
+      "env": [
+        {
+          "name": "REGISTRY_PROXY_REMOTEURL",
+          "default": "https://registry-1.docker.io",
+          "preset": true
+        }
+      ]
+    },
+    {
+      "type": 1,
       "title": "Ubuntu",
       "description": "Debian-based Linux operating system",
       "categories": ["operating-system"],
@@ -683,6 +705,121 @@
       ]
     },
     {
+      "type": 1,
+      "title": "Dokku",
+      "description": "Dokku setup as a container",
+      "categories": ["PaaS"],
+      "platform": "linux",
+      "logo": "",
+      "image":"dokku/dokku",
+      "ports": ["22/tcp", "80/tcp", "443/tcp"],
+      "volumes": [{
+        "container": "/mnt/dokku",
+        "bind": "/var/lib/dokku"
+      },
+      {
+        "container": "/var/run/docker.sock",
+        "bind": "/var/run/docker.sock"
+      }],
+      "env":[
+        {
+          "name": "DOKKU_HOSTNAME",
+          "label": "Dokku hostname",
+          "description": "Global hostname to be registered by Dokku"
+        },
+        {
+          "name": "DOKKU_HOST_ROOT",
+          "label": "Dokku host root",
+          "default": "/var/lib/dokku/home/dokku",
+          "description": "Image build cache path. Generally set to <data dir> + '/home/dokku'"
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "title": "OPC Router",
+      "description": "No-code middleware for industrial applications. The OPC Router connects PLCs, PCS, SCADA, MES, SQL databases and servers, label printers, e-mail servers and erp-systems via OPC UA, MQTT, REST, CSV and many others without any programming effort",
+      "note": "More information about the <a href=\"https://www.opc-router.com/terms-of-use-and-eula/?utm_source=DockerHub_runtime&utm_medium=click&utm_campaign=TermsOfUseAndEula\" target=\"_blank\">EULA</a>.",
+      "categories": ["edge"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/opc-router.png",
+      "image": "opcrouter/runtime:latest",
+      "ports": ["27017/tcp"],
+      "env": [
+        {
+          "name": "OR_DATABASE_USERNAME",
+          "label": "Remote management user"
+        },
+        {
+          "name": "MONGO_INITDB_ROOT_USERNAME",
+          "label": "Remote management password"
+        },
+        {
+          "name": "OR_DATABASE_PASSWORD",
+          "label": "Database root user"
+        },
+        {
+          "name": "MONGO_INITDB_ROOT_PASSWORD",
+          "label": "Database root password"
+        },
+        {
+          "name": "OR_I_ACCEPT_EULA",
+          "label": "Accept EULA",
+          "select": [
+            {
+              "text": "Yes, I accept",
+              "value": "true",
+              "default": true
+            }
+          ]
+        }
+      ],
+      "volumes": [
+        {
+          "container": "/data/db"
+        },
+        {
+          "container": "/root/.dotnet/corefx/cryptography/x509stores/"
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "title": "Floating License Server",
+      "description": "License Server for Softing edgeConnector products",
+      "categories": ["edge"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/softing.png",
+      "image": "softingindustrial/floating-license-server:latest",
+      "ports": ["6200/tcp"],
+      "interactive": true,
+      "volumes": [
+        {
+          "container": "/licsrv/licenses"
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "title": "EdgeConnector Modbus",
+      "description": "Connect Modbus TCP Sensors/PLCs and provide the data via OPC UA and MQTT",
+      "categories": ["edge"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/softing.png",
+      "image": "softingindustrial/edgeconnector-modbus:latest",
+      "ports": ["443/tcp", "8099/tcp", "4897/tcp"]
+    },
+    {
+      "type": 1,
+      "title": "EdgeConnector 840D",
+      "description": "Access Siemens SINUMERIK 840D sl/pl controllers and provide data via OPC UA and MQTT",
+      "categories": ["edge"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/softing.png",
+      "image": "softingindustrial/edgeconnector-840d",
+      "ports": ["443/tcp", "8099/tcp", "4897/tcp"]
+    },
+    {
       "type": 2,
       "title": "Portainer Agent",
       "description": "Manage all the resources in your Swarm cluster",
@@ -900,6 +1037,13 @@
       "stackfile": "https://raw.githubusercontent.com/portainer/templates/master/stacks/cockroachdb/edge/docker-stack.yml"
     },
     {
+      "type": 4,
+      "title": "Softing EdgeConnector modbus",
+      "description": "Connect Modbus TCP Sensors/PLCs and provide the data via OPC UA and MQTT",
+      "note": "Connect Modbus TCP Sensors/PLCs and provide the data via OPC UA and MQTT",
+      "stackfile": "https://raw.githubusercontent.com/portainer/templates/master/stacks/softing-edgeconnector-modbus/docker-compose.yml"
+    },
+    {
       "type": 3,
       "title": "FDO",
       "description": "FDO",
@@ -917,6 +1061,115 @@
         {
           "name": "owner_api_password",
           "label": "API Password"
+        }
+      ]
+    },
+    {
+      "type": 3,
+      "title": "Dokku",
+      "description": "Dokku setup as a compose file",
+      "categories": ["PaaS"],
+      "platform": "linux",
+      "logo": "",
+      "repository": {
+        "url": "https://github.com/portainer/templates",
+        "stackfile": "stacks/dokku/docker-compose.yml"
+      },
+      "env": [
+        {
+          "name": "VERSION",
+          "label": "Dokku version",
+          "description": "Version of Dokku to use ('latest' if empty)",
+          "default": "latest"
+        },
+        {
+          "name": "DOKKU_HOSTNAME",
+          "label": "Dokku hostname",
+          "description": "Global hostname to be registered by Dokku"
+        },
+        {
+          "name": "VOLUME_PATH",
+          "label": "Dokku volume path",
+          "description": "Host path to be bound to /mnt/dokku (`/var/lib/dokku` if empty)",
+          "default": "/var/lib/dokku"
+        },
+        {
+          "name": "DOKKU_HOST_ROOT",
+          "label": "Dokku host root",
+          "description": "Image build cache path. Generally set to <data dir> + '/home/dokku'",
+          "default": "/var/lib/dokku/home/dokku"
+        },
+        {
+          "name": "SSH_PORT",
+          "label": "SSH port",
+          "description": "Host port to expose SSH port of Dokku (22 if empty)",
+          "default": "22"
+        },
+        {
+          "name": "HTTP_PORT",
+          "label": "HTTP port",
+          "description": "Host port to expose HTTP port of Dokku (80 if empty)",
+          "default": "80"
+        },
+        {
+          "name": "HTTPS_PORT",
+          "label": "HTTPS port",
+          "description": "Host port to expose HTTPS port of Dokku (443 if empty)",
+          "default": "443"
+        }
+      ]
+    },
+    {
+      "type": 2,
+      "title": "LiveSwitch",
+      "description": "A basic LiveSwitch stack with gateway, caching, database and media server",
+      "categories": ["media"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/liveswitch.png",
+      "repository": {
+        "url": "https://github.com/portainer/templates",
+        "stackfile": "stacks/liveswitch/docker-stack.yml"
+      },
+      "env": [
+        {
+          "name": "POSTGRES_PASSWORD",
+          "label": "Postgres password"
+        }
+      ]
+    },
+    {
+      "type": 3,
+      "title": "LiveSwitch",
+      "description": "A basic LiveSwitch compose with gateway, caching, database and media server",
+      "categories": ["media"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/liveswitch.png",
+      "repository": {
+        "url": "https://github.com/portainer/templates",
+        "stackfile": "stacks/liveswitch/docker-compose.yml"
+      },
+      "env": [
+        {
+          "name": "POSTGRES_PASSWORD",
+          "label": "Postgres password"
+        }
+      ]
+    },
+    {
+      "type": 3,
+      "title": "TOSIBOX Lock for Container",
+      "description": "Lock for Container brings secure connectivity inside your industrial IoT devices",
+      "categories": ["edge"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/tosibox.png",
+      "repository": {
+        "url": "https://github.com/portainer/templates",
+        "stackfile": "stacks/tosibox/docker-compose.yml"
+      },
+      "env": [
+        {
+          "name": "LICENSE_KEY",
+          "label": "License key"
         }
       ]
     }
