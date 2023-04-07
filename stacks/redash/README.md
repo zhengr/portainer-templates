@@ -83,50 +83,51 @@ sudo systemctl start docker && sudo systemctl enable docker
 version: "2"
 x-redash-service: &redash-service
 
-  #现在image的值为中文开源版的tag如果要使用官方的镜像，在docker hub上查看官方tag，然后替换。
+#### 现在image的值为中文开源版的tag如果要使用官方的镜像，在docker hub上查看官方tag，然后替换。
 
+`
   image: dazdata/redash:v10-21.11.19
   depends_on:
 
    - postgres
    - redis
      env_file: /opt/redash/env
-       restart: always
-     services:
-       server:
-         <<: *redash-service
-         command: server
-         environment:
-     REDASH_WEB_WORKERS: 4
-       scheduler:
-         <<: *redash-service
-         command: scheduler
-       worker:
-         <<: *redash-service
-         command: worker
-         environment:
-     WORKERS_COUNT: 4
-       redis:
-         image: redis:5.0-alpine
          restart: always
-       postgres:
-         image: postgres:12-alpine
-         env_file: /opt/redash/env
-         volumes:
+     services:
+         server:
+     <<: *redash-service
+     command: server
+     environment:
+     REDASH_WEB_WORKERS: 4
+         scheduler:
+       <<: *redash-service
+       command: scheduler
+         worker:
+       <<: *redash-service
+       command: worker
+       environment:
+     WORKERS_COUNT: 4
+         redis:
+       image: redis:5.0-alpine
+       restart: always
+         postgres:
+       image: postgres:12-alpine
+       env_file: /opt/redash/env
+       volumes:
      - /opt/redash/postgres-data:/var/lib/postgresql/data
        restart: always
-       nginx:
-         image: dazdata/redash-nginx:latest
-         ports:
+         nginx:
+       image: dazdata/redash-nginx:latest
+       ports:
      - "5000:80"
        depends_on:
      - server
        links:
      - server:redash
        restart: always
-
-在安装目录，拉起Redash。
-`sudo docker-compose up -d`
+       `
+       在安装目录，拉起Redash。
+       `sudo docker-compose up -d`
 
 初始化数据库，然后通过浏览器访问服务器5000端口即可
 `sudo docker-compose run --rm server create_db`
