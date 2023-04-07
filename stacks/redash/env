@@ -1,0 +1,12 @@
+#/opt/redash/env/内容
+PYTHONUNBUFFERED=0
+REDASH_LOG_LEVEL=INFO
+REDASH_REDIS_URL=redis://redis:6379/0
+POSTGRES_PASSWORD=aaa123456
+REDASH_COOKIE_SECRET=wo3urion23i4un2l34jm2l34k
+REDASH_SECRET_KEY=u2o34nlfksjelruirk
+REDASH_DATABASE_URL="postgresql://postgres:aaa123456@postgres/postgres"
+ORACLE_HOME="/usr/lib/oracle/12.2/client64"
+LD_LIBRARY_PATH="/usr/lib/oracle/12.2/client64/lib"
+REDASH_FEATURE_ALLOW_CUSTOM_JS_VISUALIZATIONS="true"
+REDASH_ADDITIONAL_QUERY_RUNNERS="redash.query_runner.oracle,redash.query_runner.python"
