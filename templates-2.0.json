@@ -51,6 +51,17 @@
     },
     {
       "type": 1,
+      "title": "Debian",
+      "description": "Debian Linux operating system",
+      "categories": ["operating-system"],
+      "platform": "linux",
+      "logo": "https://hub.docker.com/api/media/repos_logo/v1/library%2Fdebian",
+      "image": "debian:latest",
+      "interactive": true,
+      "command": "/bin/bash"
+    },
+    {
+      "type": 1,
       "title": "NodeJS",
       "description": "JavaScript-based platform for server-side and networking applications",
       "categories": ["development"],
