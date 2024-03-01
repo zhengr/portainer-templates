@@ -227,9 +227,9 @@
     },
     {
       "type": 1,
-      "title": "Gitlab CE",
+      "title": "GitLab CE",
       "description": "Open-source end-to-end software development platform",
-      "note": "Default username is <b>root</b>. Check the <a href=\"https://docs.gitlab.com/omnibus/docker/README.html#after-starting-a-container\" target=\"_blank\">Gitlab documentation</a> to get started.",
+      "note": "Default username is <b>root</b>. Check the <a href=\"https://docs.gitlab.com/ee/install/docker.html\" target=\"_blank\">GitLab documentation</a> to get started.",
       "categories": ["development", "project-management"],
       "platform": "linux",
       "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/gitlab_ce.png",
@@ -410,6 +410,32 @@
         }
       ]
     },
+		{
+			"type": 2,
+			"title": "Swarm monitoring",
+			"description": "Monitor your cluster performances with Prometheus & Grafana",
+			"note": "Requires Docker version 19.03.0+. <b>Make sure to add the <code>monitoring == true</code> one of your Swarm manager node before deploying this stack.</b>",
+			"categories": [
+				"Monitoring"
+			],
+			"platform": "linux",
+			"logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/portainer.png",
+			"repository": {
+				"url": "https://github.com/portainer/templates",
+				"stackfile": "swarm/monitoring/docker-compose.yml"
+			},
+			"env": [
+				{
+					"name": "GRAFANA_USER",
+					"label": "Grafana admin user",
+					"default": "admin"
+				},
+				{
+					"name": "GRAFANA_PASSWORD",
+					"label": "Grafana admin password"
+				}
+			]
+		},    
     {
       "type": 2,
       "title": "Redis Cluster",
@@ -744,23 +770,15 @@
       "platform": "linux",
       "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/opc-router.png",
       "image": "opcrouter/runtime:latest",
-      "ports": ["27017/tcp"],
+      "ports": ["49429/tcp", "8080/tcp", "8081/tcp"],
       "env": [
         {
-          "name": "OR_DATABASE_USERNAME",
-          "label": "Remote management user"
+          "name": "INITIAL_USERNAME",
+          "label": "Initial Admin User user"
         },
         {
-          "name": "MONGO_INITDB_ROOT_USERNAME",
-          "label": "Remote management password"
-        },
-        {
-          "name": "OR_DATABASE_PASSWORD",
-          "label": "Database root user"
-        },
-        {
-          "name": "MONGO_INITDB_ROOT_PASSWORD",
-          "label": "Database root password"
+          "name": "INITIAL_PASSWORD",
+          "label": "Inital Admin User Password"
         },
         {
           "name": "OR_I_ACCEPT_EULA",
@@ -776,11 +794,14 @@
       ],
       "volumes": [
         {
-          "container": "/data/db"
+          "container": "/data/database"
         },
         {
-          "container": "/root/.dotnet/corefx/cryptography/x509stores/"
-        }
+          "container": "/inray"
+        },
+	      {
+          "container": "/var/log/opcrouter"
+        }      
       ]
     },
     {
@@ -818,6 +839,64 @@
       "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/softing.png",
       "image": "softingindustrial/edgeconnector-840d",
       "ports": ["443/tcp", "8099/tcp", "4897/tcp"]
+    },
+    {
+      "type": 1,
+      "title": "EdgeConnector Siemens",
+      "description": "Connect Siemens SIMATIC S7-300/400/1200/1500 PLCs and provide the data via OPC UA and MQTT",
+      "categories": ["edge"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/softing.png",
+      "image": "softingindustrial/edgeconnector-siemens",
+      "ports": ["443/tcp", "8099/tcp", "4897/tcp"]
+    },
+    {
+      "type": 1,
+      "title": "EdgeConnector FANUC CNC",
+      "description": "Connect FANUC CNCs and provide the data via OPC UA and MQTT",
+      "categories": ["edge"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/softing.png",
+      "image": "softingindustrial/edgeconnector-fanuc-cnc",
+      "ports": ["443/tcp", "8099/tcp", "4897/tcp"],
+      "env": [
+        {
+          "name": "TZ",
+          "label": "TZ"
+        }
+      ],
+      "volumes": [
+        {
+          "container": "/config"
+        },
+        {
+          "container": "/mqtt"
+        }     
+      ]
+    },
+    {
+      "type": 1,
+      "title": "EdgeConnector Aggregator",
+      "description": "Offers a powerful OPC UA aggregation service which provides data via OPC UA, as well as MQTT",
+      "categories": ["edge"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/softing.png",
+      "image": "softingindustrial/edgeaggregator",
+      "ports": ["443/tcp", "8099/tcp", "4897/tcp"],
+      "env": [
+        {
+          "name": "TZ",
+          "label": "TZ"
+        }
+      ],
+      "volumes": [
+        {
+          "container": "/config"
+        },
+        {
+          "container": "/mqtt"
+        }     
+      ]
     },
     {
       "type": 2,
@@ -1023,27 +1102,6 @@
       ]
     },
     {
-      "type": 4,
-      "title": "Wordpress",
-      "description": "Wordpress setup with a MySQL database",
-      "note": "Deploys a Wordpress instance connected to a MySQL database.",
-      "stackfile": "https://raw.githubusercontent.com/portainer/templates/master/stacks/wordpress/edge/docker-stack.yml"
-    },
-    {
-      "type": 4,
-      "title": "CockroachDB",
-      "description": "CockroachDB cluster",
-      "note": "Deploys an insecure CockroachDB cluster, please refer to <a href=\"https://www.cockroachlabs.com/docs/stable/orchestrate-cockroachdb-with-docker-swarm.html\" target=\"_blank\">CockroachDB documentation</a> for production deployments.",
-      "stackfile": "https://raw.githubusercontent.com/portainer/templates/master/stacks/cockroachdb/edge/docker-stack.yml"
-    },
-    {
-      "type": 4,
-      "title": "Softing EdgeConnector modbus",
-      "description": "Connect Modbus TCP Sensors/PLCs and provide the data via OPC UA and MQTT",
-      "note": "Connect Modbus TCP Sensors/PLCs and provide the data via OPC UA and MQTT",
-      "stackfile": "https://raw.githubusercontent.com/portainer/templates/master/stacks/softing-edgeconnector-modbus/docker-compose.yml"
-    },
-    {
       "type": 3,
       "title": "FDO",
       "description": "FDO",
@@ -1172,6 +1230,82 @@
           "label": "License key"
         }
       ]
+    },
+    {
+      "type": 3,
+      "title": "Pro Mosquitto with Management Center",
+      "description": "Commercial-grade Mosquitto MQTT broker with Management Center",
+      "note": "The Mosquitto broker password must be at least 12 characters.",
+      "categories": ["edge"],
+      "platform": "linux",
+      "logo": "https://portainer-io-assets.sfo2.digitaloceanspaces.com/logos/cedalo.png",
+      "repository": {
+        "url": "https://github.com/portainer/templates",
+        "stackfile": "edge/cedalo-mosquitto-mc/docker-compose.yml"
+      },
+      "env": [
+        {
+          "name": "CEDALO_LICENSE_KEY",
+          "label": "License key"
+        },
+        {
+          "name": "CEDALO_MOSQUITTO_PASSWORD",
+          "label": "Mosquitto password"
+        },
+        {
+          "name": "CEDALO_MC_USER",
+          "label": "Management Center username",
+          "default": "cedalo"
+        },
+        {
+          "name": "CEDALO_MC_PASSWORD",
+          "label": "Management Center password"
+        }
+      ]
+    },
+    {
+      "type": 4,
+      "title": "Softing EdgeConnector modbus",
+      "description": "Connect Modbus TCP Sensors/PLCs and provide the data via OPC UA and MQTT",
+      "stackfile": "https://raw.githubusercontent.com/portainer/templates/master/edge/softing-edgeconnector-modbus/docker-compose.yml"
+    },
+    {
+      "type": 4,
+      "title": "Softing EdgeConnector 840D",
+      "description": "Access Siemens SINUMERIK 840D sl/pl controllers and provide data via OPC UA and MQTT",
+      "stackfile": "https://raw.githubusercontent.com/portainer/templates/master/edge/softing-edgeconnector-840d/docker-compose.yml"
+    },
+    {
+      "type": 4,
+      "title": "Softing EdgeConnector Siemens",
+      "description": "Connect Siemens SIMATIC S7-300/400/1200/1500 PLCs and provide the data via OPC UA and MQTT",
+      "stackfile": "https://raw.githubusercontent.com/portainer/templates/master/edge/softing-edgeconnector-siemens/docker-compose.yml"
+    },
+    {
+      "type": 4,
+      "title": "Softing EdgeConnector FANUC CNC",
+      "description": "Connect FANUC CNCs and provide the data via OPC UA and MQTT",
+      "stackfile": "https://raw.githubusercontent.com/portainer/templates/master/edge/softing-edgeconnector-fanuc-cnc/docker-compose.yml"
+    },
+    {
+      "type": 4,
+      "title": "Softing EdgeConnector Aggregator",
+      "description": "Offers a powerful OPC UA aggregation service which provides data via OPC UA, as well as MQTT",
+      "stackfile": "https://raw.githubusercontent.com/portainer/templates/master/edge/softing-edgeconnector-aggregator/docker-compose.yml"
+    },
+    {
+      "type": 4,
+      "title": "OPC Router",
+      "description": "No-code middleware for industrial applications",
+      "note": "More information about the <a href=\"https://www.opc-router.com/terms-of-use-and-eula/?utm_source=DockerHub_runtime&utm_medium=click&utm_campaign=TermsOfUseAndEula\" target=\"_blank\">EULA</a>.",
+      "stackfile": "https://raw.githubusercontent.com/portainer/templates/master/edge/opc-router/docker-compose.yml"
+    },
+    {
+      "type": 4,
+      "title": "Pro Mosquitto with Management Center",
+      "description": "Commercial-grade Mosquitto MQTT broker with Management Center",
+      "note": "Use <b>admin</b> as the default username to connect to the Management Center.",
+      "stackfile": "https://raw.githubusercontent.com/portainer/templates/master/edge/cedalo-mosquitto-mc/docker-compose.yml"
     }
   ]
 }
